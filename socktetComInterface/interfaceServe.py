@@ -8,9 +8,9 @@ import queue
 from datetime import date
 
 HOST = '127.0.0.1' #IP do servidor
-PORT =  5000       #Porta em que o servior vai esta rodando
+PORT =  5000       #Porta em que o servidor vai esta rodando
 
-teste = False
+cancel = False
 
 sg.theme('Dark')
 
@@ -21,8 +21,8 @@ layout = [  [sg.Multiline(size=(60,25), key='servidor',disabled=True,text_color=
 
 window = sg.Window('Controller Serve', layout)
 
-def updateGUI(teste, element):
-    element.Update(teste+"\n", append=True)
+def updateGUI(text, element):
+    element.Update(text+"\n", append=True)
     
 def generatorString(sizeString):
     random.randint(0,51)
@@ -35,7 +35,7 @@ def close(conn):
     conn.close()
 
 def connecClientTCP(queue,host,port):
-    global teste
+    global cancel
     while True:
         try:
             s = socket.socket(socket.AF_INET,socket.SOCK_STREAM) #Criação de uma variavel do tipo socket, socket.AF_INET indica endereços IP de 32 bits,socket.SOCK_STREAM e esse indica TCP/IP
@@ -47,8 +47,8 @@ def connecClientTCP(queue,host,port):
             queue.put(address)#Adincuina address a fila 
             break
         except:
-           if teste:
-                teste = False
+           if cancel:
+                cancel = False
                 break
 def timeStop():
     while threading.active_count() > 2:
@@ -56,11 +56,11 @@ def timeStop():
 
     window['Configurar servidor'].Update(disabled=False)
     window['btnStartServ'].Update(disabled=False)
-    updateGUI("Servior encerado", window['servidor'])
+    updateGUI("Servidor encerado", window['servidor'])
 
 #Funcão para iniciar o servidor
 def startServer():
-    global teste
+    global cancel
     while True:   
         action = " "        # Variavel utlizada para sair do primeiro while
         q = queue.Queue()   # fila
@@ -73,8 +73,8 @@ def startServer():
                 break                            #sai do while
             if event == 'btnCancelServ':         # Caos evento na tela seja cancelar servidor função modifica valores da variveis e cancela a conexão com os clientes
                 action = event
-                teste = True
-                updateGUI("Servior esta sendo encerrado", window['servidor'])
+                cancel = True
+                updateGUI("Servidor esta sendo encerrado", window['servidor'])
                 updateGUI("Por favor aguarde alguns instantes", window['servidor'])
                 updateGUI(" ", window['servidor'])
                 break
@@ -97,7 +97,7 @@ def startServer():
                         conn.sendall(str.encode("IMPAR"))
                         updateGUI("Mensagem enviada: " + "IMPAR", window['servidor'])
                 else:   #Caso maior ou igual retorna uma string de mesmo tamanho
-                    updateGUI("Valor recebido tem mais de 10 caracteres", window['servidor'])
+                    updateGUI("Valor recebido tem 10 ou mais caracteres", window['servidor'])
                     frase = generatorString(len(data.decode()))
                     updateGUI("Frase enviada: "+frase, window['servidor'])
                     conn.sendall(str.encode(frase))
