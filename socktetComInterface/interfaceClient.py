@@ -19,7 +19,7 @@ tempoText = str(tempo)
 sg.theme('Dark')
 
 layout = [  [sg.Multiline(size=(35,25), key='servidor',disabled=True,text_color='green',background_color="black",font="Arial",autoscroll=True,no_scrollbar=True),sg.Text(tempoText,key="time",font=("Arial",40),background_color='black',text_color='green')],
-            [sg.Button('Iniciar conexão com servidor',key='btnStartServ',disabled=False), sg.Button('Cancelar Conexão Servidor',key='btnCancelServ',disabled=True),sg.Button("Config",disabled=False)]]
+            [sg.Button('Iniciar conexão com servidor',key='btnStartServ',disabled=False), sg.Button('Cancelar Conexão Servidor',key='btnCancelServ',disabled=True),sg.Push(),sg.Button("Config",disabled=False)]]
 
 cancel_connection = False
 
@@ -31,7 +31,6 @@ def updateGUI(teste, element, last_line=None):
     
 def connectTCP(queue,host,port):
         conn = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-        conn.settimeout(1)
         conn.connect((host,port))
         queue.put(conn)
             

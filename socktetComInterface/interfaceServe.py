@@ -7,15 +7,15 @@ import threading
 import queue
 from datetime import date
 
-HOST = '127.0.0.1' #IP do servidor
-PORT =  5000       #Porta em que o servidor vai esta rodando
+host = '127.0.0.1' #IP do servidor
+port =  5000       #Porta em que o servidor vai esta rodando
 
 cancel = False
 
 sg.theme('Dark')
 
 layout = [  [sg.Multiline(size=(60,25), key='servidor',disabled=True,text_color='green',background_color="black",font="Arial",autoscroll=True,no_scrollbar=True)],
-            [sg.Button('Iniciar servidor',key='btnStartServ',disabled=False), sg.Button('Cancelar Conexão Servidor',key='btnCancelServ',disabled=True), sg.Button('Configurar servidor')]]
+            [sg.Button('Iniciar servidor',key='btnStartServ',disabled=False), sg.Button('Cancelar Conexão Servidor',key='btnCancelServ',disabled=True),sg.Push(), sg.Button('Configurar servidor')]]
 
 
 
@@ -64,7 +64,7 @@ def startServer():
     while True:   
         action = " "        # Variavel utlizada para sair do primeiro while
         q = queue.Queue()   # fila
-        t = threading.Thread(target=connecClientTCP, args=(q,HOST,PORT))   #threding de configuração do servidor 
+        t = threading.Thread(target=connecClientTCP, args=(q,host,port))   #threding de configuração do servidor 
         t.start() # iniciar threding
         updateGUI("Aguardando conexão...", window['servidor']) #Mensagem de aguadaando conexão e mostrada na tela 
         while True:
@@ -116,6 +116,9 @@ while True:
     if event == 'btnStartServ':
         window['Configurar servidor'].Update(disabled=True)
         window['btnStartServ'].Update(disabled=True)
+        updateGUI("Servidor iniciado: ", window['servidor'])
+        updateGUI("IP do servidor: " + str(host) , window['servidor'])
+        updateGUI("Porta do servidor: " + str(port) , window['servidor'])
         startServer()
         window['btnCancelServ'].Update(disabled=True)
         t2 = threading.Thread(target=timeStop, args=())
@@ -124,8 +127,8 @@ while True:
         
        
     if event == 'Configurar servidor':
-        layout2 = [[sg.Text("ID SERVIDOR: "),sg.Input(default_text=HOST,size=(10,3))],
-                   [sg.Text("PORTA: "),sg.Column([],size=(28)),sg.Input(default_text=PORT,size=(10,3))],
+        layout2 = [[sg.Text("ID SERVIDOR: "),sg.Input(default_text=host,size=(10,3))],
+                   [sg.Text("PORTA: "),sg.Column([],size=(28)),sg.Input(default_text=port,size=(10,3))],
                     [sg.Button("Confirmar")]]
         modal_window = sg.Window("Config",layout2,modal=True)
         while True:
@@ -134,8 +137,8 @@ while True:
                 break
             if new_event == "Confirmar":
                 confirm_popup = sg.popup('Servidor configurado.', auto_close=True, auto_close_duration=2)
-                HOST = new_values[0]
-                PORT = int(new_values[1])
+                host = new_values[0]
+                port = int(new_values[1])
                 modal_window.close()
                 break
         
